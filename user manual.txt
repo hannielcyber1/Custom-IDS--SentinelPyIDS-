@@ -1,0 +1,168 @@
+=======================================================
+  SENTINELPY IDS / IPS - COMPLETE COMMAND REFERENCE
+  Location: C:\Users\hanni\OneDrive\Documents\GitHub\Cyber\custom_ids\
+=======================================================
+
+HOW TO OPEN & RUN:
+  1. Open PowerShell AS ADMINISTRATOR.
+  2. Navigate to the project directory:
+     cd C:\Users\hanni\OneDrive\Documents\GitHub\Cyber\custom_ids
+
+
+-------------------------------------------------------
+1. VALIDATE RULES & CONFIGURATION
+   Verifies syntax, schemas, and checks for duplicate rule IDs.
+
+   python main.py validate
+-------------------------------------------------------
+
+-------------------------------------------------------
+2. LIST AVAILABLE NETWORK INTERFACES
+   Lists all physical and virtual interfaces available to monitor.
+
+   python main.py interfaces
+-------------------------------------------------------
+
+-------------------------------------------------------
+3. RUN LIVE MONITORING & PREVENTION (IDS / IPS)
+   Starts real-time packet inspection, email/webhook alerts,
+   active IPS firewall drops, and network file extraction.
+   (Must run PowerShell as Administrator)
+
+   python main.py run
+
+   To capture on a specific network interface:
+   python main.py run --interface "Wi-Fi"
+   python main.py run --interface "Ethernet"
+   python main.py run --interface "192.168.1.10"
+
+   Press CTRL+C at any time to cleanly stop capture.
+   (A session summary is displayed and a stop alert is sent)
+-------------------------------------------------------
+
+-------------------------------------------------------
+4. REPLAY OFFLINE PCAP CAPTURES
+   Analyzes a packet capture file deterministically.
+   (Emails and live firewall drops are disabled during replay)
+
+   python main.py replay --pcap tests\pcaps\tcp_port_scan.pcap
+   python main.py replay --pcap tests\pcaps\cleartext_creds.pcap
+
+   Replay with a packet count limit:
+   python main.py replay --pcap path\to\file.pcap --max-packets 500
+-------------------------------------------------------
+
+-------------------------------------------------------
+5. VIEW RECENT HISTORICAL ALERTS
+   Displays alerts stored in the SQLite database.
+
+   python main.py alerts
+
+   Show a specific number of recent alerts:
+   python main.py alerts --limit 100
+-------------------------------------------------------
+
+-------------------------------------------------------
+6. ENGINE HEALTH & SYSTEM STATUS
+   Shows database path, total alerts, JSONL stream status, and Python version.
+
+   python main.py status
+-------------------------------------------------------
+
+-------------------------------------------------------
+7. IMPORT SNORT / SURICATA RULES
+   Converts standard Snort community rules into SentinelPy YAML.
+   Automatically maps classtypes, PCRE, hex bytes, and flowbits.
+
+   python main.py import-snort --rules rules\snort_community_sample.rules
+
+   Import your own custom Snort rules file:
+   python main.py import-snort --rules path\to\file.rules --output rules\signatures\custom.yaml
+-------------------------------------------------------
+
+-------------------------------------------------------
+8. THREAT INTEL BLOCKLIST UPDATER
+   Downloads and indexes known malicious botnets/C2s from abuse.ch.
+
+   python main.py update-blocklist
+-------------------------------------------------------
+
+-------------------------------------------------------
+9. ACTIVE IPS FIREWALL MANAGEMENT
+   Manage automated OS firewall blocks (Windows Firewall / netsh).
+
+   A. View all currently blocked attacker IPs and reasons:
+      python main.py ips-list
+
+   B. Manually unblock a specific IP:
+      python main.py ips-unblock --ip 198.51.100.50
+
+   C. Remove all active firewall blocks:
+      python main.py ips-clear
+-------------------------------------------------------
+
+
+=======================================================
+  RULES & ENGINES SUMMARY
+=======================================================
+
+  Signature Rules  : 56 active
+  Behavioral Models: 4 active
+
+  Rule Files:
+    - rules\signatures\network.yaml          (DPI, JA3, HTTP, Flowbits)
+    - rules\signatures\snort_community.yaml  (Imported Snort rules)
+    - rules\behavioral\port_scan.yaml        (Port scan, ping sweep, ARP, SSH)
+
+
+=======================================================
+  CONFIG SETTINGS (config\ids.yaml)
+=======================================================
+
+  • Email Alerts:
+      Enabled: true
+      Sender: omgddy@gmail.com
+      Recipient: hannielcurry@gmail.com
+      Alerts on: Medium, High, Critical severities
+
+  • Active IPS Blocking:
+      Path in config: `ips:`
+      Set `enabled: true` and `dry_run: false` to drop attacker packets.
+      Default auto-block duration: 60 minutes.
+
+  • Network File Extraction:
+      Path in config: `file_extraction:`
+      Set `enabled: true` to auto-extract files from TCP streams.
+      Files are saved into: `extractions\`
+
+  • IP Threat Intelligence:
+      Path in config: `ip_reputation:`
+      Set `enabled: true` after running `update-blocklist`.
+
+  • GeoIP Country Tagging:
+      Path in config: `geoip:`
+      Set `enabled: true` to tag alert events with source country and ISP.
+
+  • Webhook / Slack Alerts:
+      Path in config: `webhook:`
+      Set `enabled: true` and provide a webhook URL for Slack or SIEM.
+
+
+=======================================================
+  RUN UNIT & INTEGRATION TESTS
+=======================================================
+
+  Run the complete 15-test test suite:
+  python -m pytest -v
+
+
+=======================================================
+  LOG & DATA FILE LOCATIONS
+=======================================================
+
+  SQLite Database    : sentinelpy.db
+  EVE JSONL Alerts   : alerts.jsonl
+  Standard Alert Log : ids_alerts.log
+  Extracted Files    : extractions\
+  Threat Intel Feed  : rules\blocklist\feodo_blocklist.txt
+=======================================================

@@ -1,0 +1,727 @@
+schema_version: 1
+rules:
+- id: SNT-105
+  name: MALWARE-BACKDOOR - Dagger_1.4.0
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:105 Rev:14
+  tags:
+  - snort-sid:105
+  - classtype:misc-activity
+  - rev:14
+  match:
+    protocol: tcp
+    source_port: 2589
+    content:
+      any_of:
+      - "2\0\0\0\x06\0\0\0Drives$\0,depth 16"
+      nocase: false
+- id: SNT-108
+  name: MALWARE-BACKDOOR QAZ Worm Client Login access
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:108 Rev:12
+  tags:
+  - snort-sid:108
+  - classtype:misc-activity
+  - rev:12
+  match:
+    protocol: tcp
+    destination_port: 7597
+    content:
+      any_of:
+      - qazwsx.hsq
+      nocase: false
+- id: SNT-110
+  name: MALWARE-BACKDOOR netbus getinfo
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:110 Rev:10
+  tags:
+  - snort-sid:110
+  - classtype:trojan-activity
+  - rev:10
+  match:
+    protocol: tcp
+    destination_ports:
+    - 12345
+    - 12346
+    content:
+      any_of:
+      - "GetInfo\r"
+      nocase: false
+- id: SNT-115
+  name: MALWARE-BACKDOOR NetBus Pro 2.0 connection established
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:115 Rev:15
+  tags:
+  - snort-sid:115
+  - classtype:trojan-activity
+  - rev:15
+  match:
+    protocol: tcp
+    source_port: 20034
+    content:
+      any_of:
+      - "BN\x10\0\x02\0,depth 6"
+      - "\x05\0,depth 2,offset 8"
+      nocase: false
+    flowbits_isset: backdoor.netbus_2.connect
+- id: SNT-117
+  name: MALWARE-BACKDOOR Infector.1.x
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:117 Rev:17
+  tags:
+  - snort-sid:117
+  - classtype:misc-activity
+  - rev:17
+  - ref:nessus,11157
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - WHATISIT,depth 9
+      nocase: false
+- id: SNT-118
+  name: MALWARE-BACKDOOR SatansBackdoor.2.0.Beta
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:118 Rev:12
+  tags:
+  - snort-sid:118
+  - classtype:trojan-activity
+  - rev:12
+  match:
+    protocol: tcp
+    source_port: 666
+    content:
+      any_of:
+      - 'Remote: ,depth 11,nocase'
+      - "You are connected to me.\r\nRemote: Ready for commands,distance 0,nocase"
+      nocase: false
+- id: SNT-119
+  name: MALWARE-BACKDOOR Doly 2.0 access
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:119 Rev:11
+  tags:
+  - snort-sid:119
+  - classtype:misc-activity
+  - rev:11
+  match:
+    protocol: tcp
+    source_port: 6789
+    content:
+      any_of:
+      - Wtzup Use,depth 32
+      nocase: false
+- id: SNT-121
+  name: MALWARE-BACKDOOR Infector 1.6 Client to Server Connection Request
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:121 Rev:14
+  tags:
+  - snort-sid:121
+  - classtype:misc-activity
+  - rev:14
+  - ref:nessus,11157
+  match:
+    protocol: tcp
+    destination_port: 146
+    content:
+      any_of:
+      - FC
+      nocase: false
+- id: SNT-141
+  name: MALWARE-BACKDOOR HackAttack 1.20 Connect
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:141 Rev:10
+  tags:
+  - snort-sid:141
+  - classtype:misc-activity
+  - rev:10
+  match:
+    protocol: tcp
+    source_port: 31785
+    content:
+      any_of:
+      - host
+      nocase: false
+- id: SNT-144
+  name: PROTOCOL-FTP ADMw0rm ftp login attempt
+  enabled: true
+  category: auth
+  severity: high
+  description: Imported from Snort community rules. SID:144 Rev:16
+  tags:
+  - snort-sid:144
+  - classtype:suspicious-login
+  - rev:16
+  match:
+    protocol: tcp
+    destination_port: 21
+    content:
+      any_of:
+      - USER,nocase
+      - w0rm,distance 1,nocase
+      nocase: false
+    regex: (?ism)^USER\s+w0rm
+- id: SNT-146
+  name: MALWARE-BACKDOOR NetSphere access
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:146 Rev:13
+  tags:
+  - snort-sid:146
+  - classtype:trojan-activity
+  - rev:13
+  match:
+    protocol: tcp
+    destination_ports:
+    - 30100
+    - 30101
+    - 30102
+    content:
+      any_of:
+      - NetSphere
+      nocase: false
+- id: SNT-148
+  name: MALWARE-BACKDOOR GateCrasher
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:148 Rev:12
+  tags:
+  - snort-sid:148
+  - classtype:trojan-activity
+  - rev:12
+  match:
+    protocol: tcp
+    source_port: 6969
+    content:
+      any_of:
+      - GateCrasher,depth 11,nocase
+      - Server,distance 0,nocase
+      - On-Line...,distance 0,nocase
+      nocase: false
+    regex: (?ism)^GateCrasher\s+v\d+\x2E\d+\x2C\s+Server\s+On-Line\x2E\x2E\x2E
+- id: SNT-149
+  name: MALWARE-BACKDOOR Bionet 0.84-0.92 access
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:149 Rev:9
+  tags:
+  - snort-sid:149
+  - classtype:misc-activity
+  - rev:9
+  match:
+    protocol: tcp
+    source_port: 12349
+    content:
+      any_of:
+      - HELLO!!
+      nocase: false
+- id: SNT-151
+  name: MALWARE-BACKDOOR shaft client login attempt
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:151 Rev:10
+  tags:
+  - snort-sid:151
+  - classtype:trojan-activity
+  - rev:10
+  match:
+    protocol: tcp
+    destination_port: 1
+    content:
+      any_of:
+      - 'login:'
+      nocase: false
+- id: SNT-1508
+  name: PROTOCOL-FTP CWD ~ attempt
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:1508 Rev:15
+  tags:
+  - snort-sid:1508
+  - classtype:misc-activity
+  - rev:15
+  match:
+    protocol: tcp
+    destination_port: 21
+    content:
+      any_of:
+      - CWD ~,nocase
+      nocase: false
+    regex: (?ism)^CWD\s+\~
+- id: SNT-382
+  name: PROTOCOL-ICMP PING BSDtype
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:382 Rev:8
+  tags:
+  - snort-sid:382
+  - classtype:misc-activity
+  - rev:8
+  - ref:arachnids,158
+  match:
+    protocol: icmp
+    content:
+      any_of:
+      - BJNM
+      nocase: false
+    icmp_type: 8
+- id: SNT-384
+  name: PROTOCOL-ICMP PING Windows
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:384 Rev:8
+  tags:
+  - snort-sid:384
+  - classtype:misc-activity
+  - rev:8
+  - ref:arachnids,154
+  match:
+    protocol: icmp
+    content:
+      any_of:
+      - abcdefghijklmnop
+      nocase: false
+    icmp_type: 8
+- id: SNT-469
+  name: PROTOCOL-ICMP PING Nmap
+  enabled: true
+  category: recon
+  severity: medium
+  description: Imported from Snort community rules. SID:469 Rev:6
+  tags:
+  - snort-sid:469
+  - classtype:network-scan
+  - rev:6
+  - ref:arachnids,162
+  match:
+    protocol: icmp
+    content:
+      any_of:
+      - CCCCCCCCCCCCCCCC
+      nocase: false
+    icmp_type: 8
+- id: SNT-497
+  name: PROTOCOL-ICMP Destination Unreachable Fragmentation Needed and DF bit was
+    set
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:497 Rev:7
+  tags:
+  - snort-sid:497
+  - classtype:misc-activity
+  - rev:7
+  - ref:arachnids,207
+  match:
+    protocol: icmp
+    icmp_type: 3
+    icmp_code: 4
+- id: SNT-535
+  name: PROTOCOL-DNS DNS inverse query overflow attempt
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:535 Rev:11
+  tags:
+  - snort-sid:535
+  - classtype:attempted-admin
+  - rev:11
+  - ref:cve,1999-0009
+  - ref:bugtraq,2302
+  match:
+    protocol: tcp
+    destination_port: 53
+    content:
+      any_of:
+      - "\t"
+      - "\0\t\0\x01"
+      nocase: false
+    magic_bytes: 09
+- id: SNT-544
+  name: SERVER-MAIL SMTP HELO overflow attempt
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:544 Rev:11
+  tags:
+  - snort-sid:544
+  - classtype:attempted-admin
+  - rev:11
+  match:
+    protocol: tcp
+    destination_port: 25
+    content:
+      any_of:
+      - HELO,nocase
+      nocase: false
+    regex: (?ism)^HELO\s[^\n]{500}
+- id: SNT-1394
+  name: SERVER-WEBAPP PHP code injection attempt
+  enabled: true
+  category: web-attack
+  severity: high
+  description: Imported from Snort community rules. SID:1394 Rev:13
+  tags:
+  - snort-sid:1394
+  - classtype:web-application-attack
+  - rev:13
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - <?php
+      nocase: true
+- id: SNT-17329
+  name: SERVER-WEBAPP PHP file include attempt
+  enabled: true
+  category: web-attack
+  severity: high
+  description: Imported from Snort community rules. SID:17329 Rev:8
+  tags:
+  - snort-sid:17329
+  - classtype:web-application-attack
+  - rev:8
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - http://
+      - .php?
+      nocase: true
+- id: SNT-19439
+  name: SERVER-WEBAPP SQL injection attempt -- SELECT
+  enabled: true
+  category: web-attack
+  severity: high
+  description: Imported from Snort community rules. SID:19439 Rev:6
+  tags:
+  - snort-sid:19439
+  - classtype:web-application-attack
+  - rev:6
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - SELECT,nocase
+      nocase: false
+    regex: (?is)SELECT.+FROM
+- id: SNT-1113
+  name: SERVER-WEBAPP directory traversal attempt
+  enabled: true
+  category: web-attack
+  severity: high
+  description: Imported from Snort community rules. SID:1113 Rev:10
+  tags:
+  - snort-sid:1113
+  - classtype:web-application-attack
+  - rev:10
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - ../
+      nocase: false
+- id: SNT-19559
+  name: INDICATOR-SCAN SSH brute force login attempt
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:19559 Rev:5
+  tags:
+  - snort-sid:19559
+  - classtype:attempted-admin
+  - rev:5
+  match:
+    protocol: tcp
+    destination_port: 22
+    content:
+      any_of:
+      - SSH-
+      nocase: false
+- id: SNT-25218
+  name: INDICATOR-SCAN RDP brute force login attempt
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:25218 Rev:5
+  tags:
+  - snort-sid:25218
+  - classtype:attempted-admin
+  - rev:5
+  match:
+    protocol: tcp
+    destination_port: 3389
+    content:
+      any_of:
+      - "\x03\0"
+      nocase: false
+    magic_bytes: '0300'
+- id: SNT-2261
+  name: INDICATOR-SCAN SMB version check
+  enabled: true
+  category: recon
+  severity: medium
+  description: Imported from Snort community rules. SID:2261 Rev:6
+  tags:
+  - snort-sid:2261
+  - classtype:network-scan
+  - rev:6
+  match:
+    protocol: tcp
+    destination_port: 445
+    content:
+      any_of:
+      - ÿSMB
+      nocase: false
+- id: SNT-687
+  name: INDICATOR-SCAN Microsoft SQL Server login attempt
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:687 Rev:13
+  tags:
+  - snort-sid:687
+  - classtype:attempted-admin
+  - rev:13
+  match:
+    protocol: tcp
+    destination_port: 1433
+    content:
+      any_of:
+      - "\x12\x01"
+      nocase: false
+    magic_bytes: '1201'
+- id: SNT-1295
+  name: PROTOCOL-DNS large UDP DNS query
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:1295 Rev:10
+  tags:
+  - snort-sid:1295
+  - classtype:misc-activity
+  - rev:10
+  match:
+    protocol: udp
+    destination_port: 53
+    content:
+      any_of:
+      - "\0\0)"
+      nocase: false
+    magic_bytes: 000029
+- id: SNT-648
+  name: INDICATOR-SHELLCODE x86 NOOP slide attempt
+  enabled: true
+  category: shellcode
+  severity: critical
+  description: Imported from Snort community rules. SID:648 Rev:14
+  tags:
+  - snort-sid:648
+  - classtype:shellcode-detect
+  - rev:14
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90"
+      nocase: false
+    magic_bytes: '90909090909090909090909090909090'
+- id: SNT-652
+  name: INDICATOR-SHELLCODE linux shellcode NOOP
+  enabled: true
+  category: shellcode
+  severity: critical
+  description: Imported from Snort community rules. SID:652 Rev:8
+  tags:
+  - snort-sid:652
+  - classtype:shellcode-detect
+  - rev:8
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - "ë\x1F^\x89v\b1À\x88F\a\x89F\f°\v"
+      nocase: false
+    magic_bytes: eb1f5e89760831c088460789460cb00b
+- id: SNT-10116
+  name: MALWARE-BACKDOOR Poison Ivy variant connection attempt
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:10116 Rev:3
+  tags:
+  - snort-sid:10116
+  - classtype:trojan-activity
+  - rev:3
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - ITSNOTME
+      nocase: false
+- id: SNT-17529
+  name: MALWARE-BACKDOOR Metasploit payload handler connect
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:17529 Rev:4
+  tags:
+  - snort-sid:17529
+  - classtype:trojan-activity
+  - rev:4
+  match:
+    protocol: tcp
+    destination_port: 4444
+    content:
+      any_of:
+      - üè
+      nocase: false
+- id: SNT-1201
+  name: MALWARE-CNC IRC communication
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:1201 Rev:13
+  tags:
+  - snort-sid:1201
+  - classtype:trojan-activity
+  - rev:13
+  match:
+    protocol: tcp
+    destination_ports:
+    - 6667
+    - 6668
+    - 6669
+    content:
+      any_of:
+      - PRIVMSG
+      nocase: true
+- id: SNT-29420
+  name: MALWARE-CNC User-Agent known malicious user agent string
+  enabled: true
+  category: malware
+  severity: high
+  description: Imported from Snort community rules. SID:29420 Rev:4
+  tags:
+  - snort-sid:29420
+  - classtype:trojan-activity
+  - rev:4
+  match:
+    protocol: tcp
+    content:
+      any_of:
+      - 'User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)'
+      nocase: true
+- id: SNT-35935
+  name: PROTOCOL-DNS excessive DNS queries potential DGA
+  enabled: true
+  category: general
+  severity: low
+  description: Imported from Snort community rules. SID:35935 Rev:3
+  tags:
+  - snort-sid:35935
+  - classtype:misc-activity
+  - rev:3
+  match:
+    protocol: udp
+    destination_port: 53
+    content:
+      any_of:
+      - "\x01\0\0\x01\0\0\0\0\0\0"
+      nocase: false
+    magic_bytes: '01000001000000000000'
+- id: SNT-30754
+  name: SERVER-WEBAPP WordPress login brute force
+  enabled: true
+  category: web-attack
+  severity: high
+  description: Imported from Snort community rules. SID:30754 Rev:3
+  tags:
+  - snort-sid:30754
+  - classtype:web-application-attack
+  - rev:3
+  match:
+    protocol: tcp
+    destination_port: 80
+    content:
+      any_of:
+      - POST
+      - /wp-login.php
+      nocase: true
+    regex: (?i)POST\s+\/wp-login\.php
+- id: SNT-31975
+  name: SERVER-WEBAPP Shellshock bash exploit attempt
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:31975 Rev:5
+  tags:
+  - snort-sid:31975
+  - classtype:attempted-admin
+  - rev:5
+  match:
+    protocol: tcp
+    destination_port: 80
+    content:
+      any_of:
+      - () {
+      nocase: false
+- id: SNT-41818
+  name: SERVER-WEBAPP Apache Struts OGNL injection
+  enabled: true
+  category: web-attack
+  severity: high
+  description: Imported from Snort community rules. SID:41818 Rev:2
+  tags:
+  - snort-sid:41818
+  - classtype:web-application-attack
+  - rev:2
+  match:
+    protocol: tcp
+    destination_port: 8080
+    content:
+      any_of:
+      - '%{'
+      - java.lang.Runtime
+      nocase: true
+- id: SNT-42329
+  name: SERVER-WEBAPP EternalBlue MS17-010 SMB exploit
+  enabled: true
+  category: exploit
+  severity: critical
+  description: Imported from Snort community rules. SID:42329 Rev:5
+  tags:
+  - snort-sid:42329
+  - classtype:attempted-admin
+  - rev:5
+  match:
+    protocol: tcp
+    destination_port: 80
+    content:
+      any_of:
+      - Windows
+      nocase: false

@@ -1,0 +1,87 @@
+sensor_id: "sentinelpy-lab"
+
+logging:
+  level: "INFO"
+  console_colors: true
+
+rules:
+  signatures_dir: "rules/signatures"
+  behavioral_dir: "rules/behavioral"
+
+storage:
+  database_path: "sentinelpy.db"
+  jsonl_path: "alerts.jsonl"
+  text_log_path: "ids_alerts.log"
+  retention_days: 30
+
+email_alerts:
+  enabled: true
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  use_tls: true
+  sender_email: "omgddy@gmail.com"
+  sender_password: "YOUR_GMAIL_APP_PASSWORD" # Overridden by config/local_ids.yaml if present
+  admin_email: "hannielcurry@gmail.com"
+  cooldown_seconds: 60
+  notify_on_start_stop: true
+
+behavioral_defaults:
+  port_scan:
+    window_seconds: 10
+    threshold_unique_ports: 15
+  icmp_sweep:
+    window_seconds: 60
+    threshold_requests: 10
+  arp_flood:
+    window_seconds: 60
+    threshold_requests: 60
+  ssh_burst:
+    window_seconds: 60
+    threshold_attempts: 3
+
+flow_tracker:
+  idle_timeout_seconds: 120
+  max_tracked_flows: 10000
+
+# ─── GeoIP Enrichment ────────────────────────────────────────────────────────
+# Uses ip-api.com (free, no key). Set enabled: true to tag alerts with country/ISP.
+# geoip_alert_countries: alert (but don't block) if traffic involves these country codes.
+geoip:
+  enabled: false
+  geoip_alert_countries: []   # e.g. ["CN", "RU", "KP", "IR"]
+
+# ─── IP Reputation / Threat Intel Blocklist ──────────────────────────────────
+# Download blocklist: python main.py update-blocklist
+# Then set enabled: true to generate CRITICAL alerts on known-malicious IPs.
+ip_reputation:
+  enabled: false
+  blocklist_path: "rules/blocklist/feodo_blocklist.txt"
+  blocklist_url: "https://feodotracker.abuse.ch/downloads/ipblocklist_aggressive.txt"
+
+# ─── Webhook / Slack Alerts ──────────────────────────────────────────────────
+# Set enabled: true and paste your Slack webhook URL (or any HTTP endpoint).
+# format: slack  → Slack attachment payload (coloured by severity)
+# format: generic → plain JSON {rule_id, rule_name, severity, src_ip, dst_ip, ...}
+webhook:
+  enabled: false
+  url: ""
+  format: slack        # slack | generic
+  min_severity: medium # minimum severity to send: informational | low | medium | high | critical
+
+# ─── Active IPS Blocking (Windows Firewall / netsh) ──────────────────────────
+# Automatically drops inbound traffic from attacking IP addresses via OS firewall.
+# Requires Administrator privileges.
+ips:
+  enabled: false
+  dry_run: true               # Set dry_run: false when running as Admin to actively drop packets
+  block_duration_minutes: 60  # Auto-unblock after this duration
+  auto_block_severities:
+    - critical
+    - high
+
+# ─── Network File Extraction ─────────────────────────────────────────────────
+# Reassembles TCP streams and extracts transferred files (PDF, EXE, ZIP, etc.)
+file_extraction:
+  enabled: false
+  output_dir: "extractions"
+  max_file_size_mb: 10

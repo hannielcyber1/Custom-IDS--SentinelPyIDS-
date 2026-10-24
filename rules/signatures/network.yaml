@@ -1,0 +1,299 @@
+schema_version: 1
+
+rules:
+  - id: SPY-1001
+    name: ICMP Echo Request Observed
+    enabled: true
+    category: network_discovery
+    severity: low
+    match:
+      protocol: icmp
+      icmp_type: 8
+    description: >
+      An ICMP echo request (ping) was observed directed toward the monitored network.
+    tags:
+      - icmp
+      - discovery
+
+  - id: SPY-1002
+    name: TCP SYN to SSH Port
+    enabled: true
+    category: connection_monitoring
+    severity: informational
+    match:
+      protocol: tcp
+      destination_port: 22
+      tcp_flags:
+        contains: S
+    description: >
+      A TCP SYN packet targeting the SSH service (port 22) was observed.
+    tags:
+      - ssh
+      - tcp
+
+  - id: SPY-1003
+    name: Plaintext Credentials In Transit
+    enabled: true
+    category: credential_access
+    severity: high
+    match:
+      protocol: tcp
+      destination_ports: [80, 21, 23, 8080]
+      content:
+        any_of:
+          - "pass="
+          - "password="
+          - "pwd="
+          - "login="
+          - "user="
+          - "authorization: basic"
+        nocase: true
+    description: >
+      Possible cleartext user authentication credentials or basic authorization headers were detected unencrypted.
+    tags:
+      - credentials
+      - cleartext
+      - http
+
+  - id: SPY-1004
+    name: Suspicious HTTP Admin Access
+    enabled: true
+    category: web_attack
+    severity: medium
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080]
+      content:
+        any_of:
+          - "/admin"
+          - "/phpmyadmin"
+          - "/wp-login.php"
+        nocase: true
+    description: >
+      An HTTP request to a common administrative or management endpoint was observed.
+    tags:
+      - web
+      - reconnaissance
+
+  - id: SPY-1005
+    name: Insecure Telnet Protocol Observed
+    enabled: true
+    category: policy_violation
+    severity: medium
+    match:
+      protocol: tcp
+      destination_port: 23
+    description: >
+      Unencrypted Telnet traffic was detected. Telnet transmits all keystrokes and credentials in cleartext.
+    tags:
+      - telnet
+      - policy
+
+  - id: SPY-1006
+    name: Executable (PE) File Download Detected
+    enabled: true
+    category: malware_delivery
+    severity: high
+    match:
+      protocol: tcp
+      ports: [80, 8080]
+      magic_bytes: "4D5A" # 'MZ' header for DOS/Windows PE executables
+    description: >
+      Deep Packet Inspection detected a Windows executable (MZ header) binary payload transferred unencrypted.
+    tags:
+      - dpi
+      - malware
+      - binary_inspection
+
+  - id: SPY-1007
+    name: SQL Injection Attack Pattern
+    enabled: true
+    category: web_attack
+    severity: critical
+    match:
+      protocol: tcp
+      destination_ports: [80, 443, 8080]
+      regex: "(?i)(union\\s+select|select.*from|or\\s+1=1|--\\s*$)"
+    description: >
+      Deep Packet Inspection regex engine matched standard SQL injection syntax in the application payload.
+    tags:
+      - dpi
+      - sqli
+      - pcre_regex
+
+  - id: SPY-1008
+    name: Suspicious C2 Domain in TLS Handshake (SNI)
+    enabled: true
+    category: command_and_control
+    severity: high
+    match:
+      protocol: tcp
+      destination_port: 443
+      tls_sni:
+        - "evil-c2-server.com"
+        - "tor2web"
+        - "onion.to"
+    description: >
+      Deep Packet Inspection extracted a known malicious or anonymizing C2 hostname from the unencrypted TLS ClientHello SNI.
+    tags:
+      - dpi
+      - tls_sni
+      - encrypted_traffic
+
+
+  # ── JA3 TLS Fingerprint Rules ─────────────────────────────────────────────
+  - id: SPY-1009
+    name: INDICATOR-TLS Known Malware JA3 Fingerprint (Cobalt Strike)
+    enabled: true
+    category: malware
+    severity: critical
+    match:
+      protocol: tcp
+      destination_port: 443
+      ja3_list:
+        - "72a7c4f499fac7d0641da055896b83cf"  # Cobalt Strike default beacon
+        - "a0e9f5d64349fb13191bc781f81f42e1"  # Cobalt Strike variant
+        - "e7d705a3286e19ea42f587b6d7b9827a"  # Metasploit Meterpreter
+    description: >
+      JA3 TLS fingerprint matched a known malicious implant or C2 framework.
+      These hashes are derived from TLS ClientHello parameters unique to the tool.
+    tags:
+      - ja3
+      - tls-fingerprint
+      - malware
+      - cobalt-strike
+
+  # ── HTTP Protocol Rules ───────────────────────────────────────────────────
+  - id: SPY-1010
+    name: INDICATOR-TOOL SQLMap SQL Injection Scanner User-Agent
+    enabled: true
+    category: web-attack
+    severity: high
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 8000, 443]
+      http_user_agent: "sqlmap"
+    description: >
+      HTTP User-Agent contains 'sqlmap' — an automated SQL injection and
+      database takeover tool. Likely active web application attack or reconnaissance.
+    tags:
+      - http
+      - sqli
+      - scanner
+      - web-attack
+
+  - id: SPY-1011
+    name: INDICATOR-TOOL Nikto Web Scanner User-Agent
+    enabled: true
+    category: recon
+    severity: medium
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 8000]
+      http_user_agent: "nikto"
+    description: >
+      HTTP User-Agent contains 'nikto' — a web vulnerability scanner.
+      Indicates active web server reconnaissance.
+    tags:
+      - http
+      - scanner
+      - recon
+
+  - id: SPY-1012
+    name: SERVER-WEBAPP Directory Traversal URI Attempt
+    enabled: true
+    category: web-attack
+    severity: high
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 8000, 443]
+      http_method: GET
+      http_uri: "../"
+    description: >
+      HTTP GET request URI contains '../' path traversal sequence.
+      Attacker may be attempting to read files outside the web root.
+    tags:
+      - http
+      - traversal
+      - web-attack
+
+  - id: SPY-1013
+    name: SERVER-WEBAPP Possible Web Shell Access
+    enabled: true
+    category: web-attack
+    severity: critical
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 8000, 443]
+      http_uri: ".php"
+      content:
+        any_of: ["cmd=", "exec=", "system(", "passthru(", "shell_exec"]
+        nocase: true
+    description: >
+      HTTP request URI targets a PHP file while the payload contains shell execution
+      function names — strong indicator of web shell interaction.
+    tags:
+      - http
+      - webshell
+      - web-attack
+      - critical
+
+  - id: SPY-1014
+    name: INDICATOR-TOOL curl Command-Line HTTP Client
+    enabled: false
+    category: policy
+    severity: low
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 8000]
+      http_user_agent: "curl/"
+    description: >
+      HTTP request from curl command-line tool. Disabled by default.
+      Enable to track non-browser HTTP clients in restrictive environments.
+    tags:
+      - http
+      - curl
+      - policy
+
+  # ── Stateful Flowbits Rules ───────────────────────────────────────────────
+  - id: SPY-1015
+    name: EXPLOIT-CHAIN Multi-Stage Attack - Stage 1 Recon Beacon
+    enabled: true
+    category: exploit
+    severity: medium
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 443]
+      content:
+        any_of: ["STAGE1_INITIALIZE", "HELO_AGENT"]
+        nocase: true
+      flowbits_set: "threat.stage1_observed"
+    description: >
+      Detects Stage 1 reconnaissance/registration beacon in a multi-stage attack sequence
+      and sets a stateful flowbit flag for this network flow.
+    tags:
+      - flowbits
+      - multi-stage
+      - stateful
+
+  - id: SPY-1016
+    name: EXPLOIT-CHAIN Multi-Stage Attack - Stage 2 Remote Code Execution
+    enabled: true
+    category: exploit
+    severity: critical
+    match:
+      protocol: tcp
+      destination_ports: [80, 8080, 443]
+      content:
+        any_of: ["STAGE2_EXECUTE", "/bin/sh", "cmd.exe"]
+        nocase: true
+      flowbits_isset: "threat.stage1_observed"
+      flowbits_set: "threat.compromised"
+    description: >
+      Detects Stage 2 payload execution ONLY IF Stage 1 was previously observed
+      on this same flow. Prevents false alarms on isolated command strings.
+    tags:
+      - flowbits
+      - multi-stage
+      - stateful
+      - rce
