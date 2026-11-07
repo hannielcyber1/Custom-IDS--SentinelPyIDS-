@@ -175,7 +175,24 @@ python main.py ips-unblock --ip 198.51.100.22
 python main.py ips-clear
 ```
 
-### 9. View Engine Health & Status
+### 9. Autostart on Windows Boot / Login
+Configure SentinelPy to automatically launch with elevated Administrator privileges on boot (using Windows Task Scheduler without interactive UAC prompts):
+```bash
+# Enable background autostart (runs silently in background)
+python main.py autostart --enable
+
+# Enable visible terminal window on boot (shows live colored alert feed)
+python main.py autostart --enable --terminal
+
+# Check current autostart task status
+python main.py autostart --status
+
+# Disable / remove autostart task
+python main.py autostart --disable
+```
+*(Or double-click `setup_autostart.bat` in File Explorer for a one-click setup menu)*
+
+### 10. View Engine Health & Status
 ```bash
 python main.py status
 ```

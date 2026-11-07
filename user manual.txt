@@ -101,6 +101,28 @@ HOW TO OPEN & RUN:
       python main.py ips-clear
 -------------------------------------------------------
 
+-------------------------------------------------------
+10. AUTOSTART ON SYSTEM BOOT / LOGIN
+   Configure SentinelPy to automatically start protecting on boot.
+   Uses Windows Task Scheduler with full Administrator privileges (no UAC popups).
+
+   A. Enable Silent Background Mode (Recommended):
+      python main.py autostart --enable
+      (Or run .\scripts\enable_autostart.ps1)
+
+   B. Enable Visible Terminal Mode (Opens live feed on boot):
+      python main.py autostart --enable --terminal
+
+   C. Check Autostart Status:
+      python main.py autostart --status
+
+   D. Disable / Remove Autostart:
+      python main.py autostart --disable
+
+   E. One-Click Interactive Menu:
+      Double-click setup_autostart.bat in File Explorer!
+-------------------------------------------------------
+
 
 =======================================================
   RULES & ENGINES SUMMARY

@@ -412,6 +412,46 @@ def cmd_ips_clear(args):
     print(f"{TermColors.GREEN}[+] Removed {count} active firewall block(s).{TermColors.RESET}")
 
 
+def cmd_autostart(args):
+    import subprocess
+    print(BANNER)
+    task_name = "SentinelPy_IDS"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.abspath(os.path.join(script_dir, ".."))
+    enable_script = os.path.join(project_dir, "scripts", "enable_autostart.ps1")
+    disable_script = os.path.join(project_dir, "scripts", "disable_autostart.ps1")
+
+    action = getattr(args, "action", "status") or "status"
+
+    if action == "status":
+        print(f"{TermColors.CYAN}[*] Querying Windows Task Scheduler for '{task_name}'...{TermColors.RESET}\n")
+        res = subprocess.run(["schtasks", "/Query", "/TN", task_name, "/FO", "LIST"], capture_output=True, text=True)
+        if res.returncode == 0:
+            print(f"{TermColors.GREEN}[+] Autostart is currently ACTIVE:{TermColors.RESET}\n")
+            for line in res.stdout.strip().splitlines():
+                if any(k in line for k in ("TaskName:", "Status:", "Next Run Time:", "Last Run Time:", "Author:")):
+                    print(f"    {line}")
+            print(f"\n{TermColors.CYAN}[*] To disable autostart, run: python main.py autostart --disable{TermColors.RESET}")
+        else:
+            print(f"{TermColors.YELLOW}[*] Autostart is currently NOT enabled (task '{task_name}' is not registered).{TermColors.RESET}\n")
+            print(f"  To enable background autostart on boot:")
+            print(f"    {TermColors.GREEN}python main.py autostart --enable{TermColors.RESET}\n")
+            print(f"  To enable with a visible terminal window on boot:")
+            print(f"    {TermColors.GREEN}python main.py autostart --enable --terminal{TermColors.RESET}\n")
+            print(f"  Or simply double-click: {TermColors.CYAN}setup_autostart.bat{TermColors.RESET}")
+
+    elif action == "enable":
+        mode = "terminal" if getattr(args, "terminal", False) else "background"
+        print(f"{TermColors.CYAN}[*] Launching autostart configuration (Mode: {mode})...{TermColors.RESET}")
+        ps_cmd = f'powershell.exe -ExecutionPolicy Bypass -File "{enable_script}" -Mode {mode}'
+        subprocess.run(ps_cmd, shell=True)
+
+    elif action == "disable":
+        print(f"{TermColors.CYAN}[*] Launching autostart removal...{TermColors.RESET}")
+        ps_cmd = f'powershell.exe -ExecutionPolicy Bypass -File "{disable_script}"'
+        subprocess.run(ps_cmd, shell=True)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="sentinelpy",
@@ -486,6 +526,16 @@ def main():
     p_iclear = subparsers.add_parser("ips-clear", help="Clear all active IPS firewall blocks")
     p_iclear.add_argument("--config", default="config/ids.yaml", help="Path to ids.yaml configuration")
     p_iclear.set_defaults(func=cmd_ips_clear)
+
+    # autostart
+    p_auto = subparsers.add_parser("autostart", help="Configure SentinelPy to automatically start on boot/login")
+    p_auto.add_argument("action", choices=["status", "enable", "disable"], nargs="?", default="status",
+                        help="Action to perform: status (default), enable, disable")
+    p_auto.add_argument("--enable", dest="action", action="store_const", const="enable", help="Enable autostart on boot/login")
+    p_auto.add_argument("--disable", dest="action", action="store_const", const="disable", help="Disable autostart")
+    p_auto.add_argument("--status", dest="action", action="store_const", const="status", help="Check autostart status")
+    p_auto.add_argument("--terminal", action="store_true", help="Launch in visible terminal window instead of silent background")
+    p_auto.set_defaults(func=cmd_autostart)
 
     args = parser.parse_args()
     if not hasattr(args, "func"):
